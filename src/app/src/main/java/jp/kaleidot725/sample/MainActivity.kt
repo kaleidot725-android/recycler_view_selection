@@ -1,9 +1,12 @@
 package jp.kaleidot725.sample
 
+import android.app.usage.StorageStats
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StableIdKeyProvider
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mikepenz.itemanimators.ScaleUpAnimator
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -11,7 +14,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
 
         val layoutManager = LinearLayoutManager(applicationContext)
-        val customAdapter =  CustomRecyclerAdapter().apply { data = createSampleData() }
+        val customAdapter =  NumberAdapter().apply { data = createNumbers() }
+        val tracker = SelectionTracker.Builder<Number>(
+            "my-selection-id",
+            recycler_view,
+            NumberKeyProvider(customAdapter),
+            NumberDetailsLookup(recycler_view),
+            StorageStrategy.createParcelableStorage(Number::class.java)
+        ).build()
 
         recycler_view.also { view ->
             view.adapter = customAdapter
@@ -20,5 +30,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun createSampleData() = (0..100).map { it.toString() }
+    private fun createNumbers() = (0..100).mapIndexed { index, number ->
+        Number(index, number.toString())
+    }
 }
