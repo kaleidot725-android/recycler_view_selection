@@ -15,7 +15,7 @@ class NumberViewHolder(private val root: FrameLayout) : RecyclerView.ViewHolder(
     fun bind(number: Number, isSelected: Boolean) {
         this.number = number
         this.textView.text = number.value
-        this.root.setBackgroundColor(if (isSelected) Color.RED else Color.BLACK)
+        this.root.setBackgroundColor(if (isSelected) Color.RED else Color.WHITE)
     }
 
     fun getItemDetails(): NumberDetails = NumberDetails(number)

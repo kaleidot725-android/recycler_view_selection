@@ -17,12 +17,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         recycler_view.layoutManager = layoutManager
 
         // Create & Setup Adapter
-        val customAdapter = NumberAdapter()
-        customAdapter.data = createNumbers()
-        recycler_view.adapter = customAdapter
+        val adapter = NumberAdapter()
+        recycler_view.adapter = adapter
 
         // Create & Setup Tracker
-        customAdapter.tracker = buildTracker(recycler_view, customAdapter)
+        adapter.tracker = buildTracker(recycler_view, adapter)
+
+        // Update
+        adapter.data = createNumbers()
+        adapter.notifyDataSetChanged()
     }
 
     private fun createNumbers() = (0..100).mapIndexed { index, number ->
