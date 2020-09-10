@@ -1,36 +1,42 @@
 package jp.kaleidot725.sample
 
-import android.app.usage.StorageStats
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Create & Setup LayoutManager
         val layoutManager = LinearLayoutManager(applicationContext)
-        val customAdapter =  NumberAdapter().apply { data = createNumbers() }
-        val tracker = SelectionTracker.Builder<Number>(
-            "my-selection-id",
-            recycler_view,
-            NumberKeyProvider(customAdapter),
-            NumberDetailsLookup(recycler_view),
-            StorageStrategy.createParcelableStorage(Number::class.java)
-        ).build()
+        recycler_view.layoutManager = layoutManager
 
-        recycler_view.also { view ->
-            view.adapter = customAdapter
-            view.layoutManager = layoutManager
-            view.setHasFixedSize(true)
-        }
+        // Create & Setup Adapter
+        val customAdapter = NumberAdapter()
+        customAdapter.data = createNumbers()
+        recycler_view.adapter = customAdapter
+
+        // Create & Setup Tracker
+        customAdapter.tracker = buildTracker(recycler_view, customAdapter)
     }
 
     private fun createNumbers() = (0..100).mapIndexed { index, number ->
         Number(index, number.toString())
+    }
+
+    private fun buildTracker(v: RecyclerView, a: NumberAdapter): SelectionTracker<Number> {
+        return SelectionTracker.Builder<Number>(
+            SELECTION_TRACKER, v, NumberKeyProvider(a),
+            NumberDetailsLookup(v), StorageStrategy.createParcelableStorage(Number::class.java)
+        ).build()
+    }
+
+    companion object {
+        private const val SELECTION_TRACKER = "NUMBER_SELECTION_TRACKER"
     }
 }
